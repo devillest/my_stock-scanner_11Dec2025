@@ -1,6 +1,6 @@
-# 阶段一: 构建Vue前端
+# 阶段一: 构建Vue前端(my 已修改）
 FROM node:18-alpine as frontend-builder
-
+#RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 # 设置工作目录
 WORKDIR /app/frontend
 
@@ -17,18 +17,23 @@ COPY frontend/ ./
 RUN npm run build
 
 # 阶段二: 构建Python后端
-FROM python:3.10-slim as backend-builder
-
+FROM python:3.12-slim-bookworm as backend-builder
+# 关键：先改 sources.list，再 apt update（这样就不用动只读的 resolv.conf）
+RUN echo "deb http://mirrors.aliyun.com/debian bookworm main contrib non-free"     > /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main contrib non-free" >> /etc/apt/sources.list
+    
 # 设置工作目录
 WORKDIR /app
 
 # 安装系统依赖和构建依赖
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
     ca-certificates \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
-
+    
 # 复制项目文件
 COPY requirements.txt /app/
 
@@ -36,14 +41,17 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # 阶段三: 运行阶段
-FROM python:3.10-slim
-
+FROM python:3.12-slim-bookworm
+RUN echo "deb http://mirrors.aliyun.com/debian bookworm main contrib non-free"     > /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main contrib non-free" >> /etc/apt/sources.list
 # 设置工作目录
 WORKDIR /app
 
 # 安装运行时依赖
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 

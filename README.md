@@ -1,4 +1,4 @@
-# 股票分析系统 (Stock Analysis System)
+# 股票分析系统 (my Stock Analysis System)
 
 ## 简介
 
@@ -142,3 +142,6 @@ docker-compose up -d
 
 ## 免责声明 (Disclaimer)
 本系统仅用于学习和研究目的，投资有风险，入市需谨慎。
+
+command Reference
+列出所有容器（包括停止的） docker ps -a 删除旧容器 docker rm stock-scanner-app 查看已有网络 docker network ls
