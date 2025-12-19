@@ -5,8 +5,6 @@ version: '3.8'
 services:
   app:
     image: crpi-fihef1gs28h9f6ht.cn-guangzhou.personal.cr.aliyuncs.com/my_space_dec2025/my_stock_rep:app-latest
-      context: .
-      dockerfile: Dockerfile
     container_name: stock-scanner-app
     ports:
       - "8888:8888"
